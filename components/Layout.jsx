@@ -59,7 +59,6 @@ export const Layout = ({ children }) => {
       <footer className="bg-gray-800 text-gray-300 py-6">
         <div className="container mx-auto px-4 text-center">
           <p>&copy; {new Date().getFullYear()} NIT Kurukshetra. Student Resource Portal.</p>
-          <p className="text-xs mt-2 text-gray-500">Built with MERN Stack</p>
         </div>
       </footer>
     </div>
