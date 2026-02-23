@@ -87,21 +87,64 @@ const SidebarItem = ({ icon, label, id, active, set }) => (
 // --- TABS ---
 
 const OverviewTab = () => {
+  const [stats, setStats] = useState({
+    totalResources: 0,
+    pendingContributions: 0,
+    totalUsers: 0
+  });
+  const [loading, setLoading] = useState(true);
+  const [systemStatus, setSystemStatus] = useState('operational');
+
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
+  const fetchStats = async () => {
+    setLoading(true);
+    try {
+      // Fetch total resources
+      const resourcesRes = await api.get('/resources/all');
+      const totalResources = resourcesRes.data.data ? resourcesRes.data.data.length : 0;
+
+      // Fetch pending contributions
+      const contributionsRes = await api.get('/contributions', { params: { status: 'pending' } });
+      const pendingContributions = contributionsRes.data.data ? contributionsRes.data.data.length : 0;
+
+      setStats({
+        totalResources,
+        pendingContributions,
+        totalUsers: 0 // Can be calculated from unique users in contributions if needed
+      });
+      setSystemStatus('operational');
+    } catch (error) {
+      console.error('Failed to fetch stats:', error);
+      setSystemStatus('error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold text-gray-800">Dashboard Overview</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <StatCard title="Total Visits" value="12,450" color="blue" />
-        <StatCard title="Active Resources" value="856" color="green" />
-        <StatCard title="Pending Requests" value="12" color="yellow" />
+        <StatCard title="Active Resources" value={loading ? '...' : stats.totalResources} color="green" />
+        <StatCard title="Pending Requests" value={loading ? '...' : stats.pendingContributions} color="yellow" />
+        <StatCard title="System Status" value={systemStatus === 'operational' ? 'Active' : 'Error'} color={systemStatus === 'operational' ? 'blue' : 'red'} />
       </div>
       <div className="bg-white p-6 rounded-xl shadow-sm border">
         <h3 className="font-bold text-gray-700 mb-4">System Status</h3>
-        <div className="flex items-center text-green-600">
-          <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-          All Systems Operational
+        <div className={`flex items-center ${systemStatus === 'operational' ? 'text-green-600' : 'text-red-600'}`}>
+          <div className={`w-3 h-3 rounded-full mr-2 ${systemStatus === 'operational' ? 'bg-green-500' : 'bg-red-500'}`}></div>
+          {systemStatus === 'operational' ? 'All Systems Operational' : 'System Error - Check Backend'}
         </div>
       </div>
+      <button 
+        onClick={fetchStats} 
+        className="mt-4 px-4 py-2 bg-nit-primary text-white rounded-lg text-sm hover:bg-blue-900 transition"
+      >
+        Refresh Stats
+      </button>
     </div>
   );
 };

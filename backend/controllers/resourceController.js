@@ -14,6 +14,15 @@ export const getResources = async (req, res) => {
   }
 };
 
+export const getAllResources = async (req, res) => {
+  try {
+    const data = await resourceService.getAll();
+    res.status(200).json({ data: data || [] });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 export const addResource = async (req, res) => {
   try {
     const { action } = req.body;
