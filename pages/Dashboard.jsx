@@ -1,8 +1,24 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { BookOpen, Users, UploadCloud } from 'lucide-react';
+import { verifyAuth } from '../services/api';
 
 export default function Dashboard() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await verifyAuth();
+        if (!response.data.user || response.data.user.role === 'admin') {
+          navigate('/');
+        }
+      } catch (error) {
+        navigate('/');
+      }
+    };
+    checkAuth();
+  }, []);
   const options = [
     {
       title: "Resources",

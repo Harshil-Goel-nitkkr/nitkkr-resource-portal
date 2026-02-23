@@ -38,15 +38,36 @@ export const adminLogin = async (req, res) => {
   }
 };
 
+export const verifyAuth = async (req, res) => {
+  try {
+    const token = req.cookies.token;
+    if (!token) {
+      return res.status(401).json({ message: 'No token found' });
+    }
+    const user = await authService.verifyToken(token);
+    res.status(200).json({ message: 'Token valid', user });
+  } catch (error) {
+    res.status(401).json({ message: 'Invalid or expired token' });
+  }
+};
+
 export const logout = (req, res) => {
-  res.clearCookie('token');
+  const cookieOptions = {
+    path: '/',
+    httpOnly: true,
+    secure: config.NODE_ENV === 'production',
+    sameSite: 'Lax'
+  };
+  res.clearCookie('token', cookieOptions);
   res.status(200).json({ message: 'Logged out' });
 };
 
 const setTokenCookie = (res, token, rememberMe) => {
   const cookieOptions = {
+    path: '/',
     httpOnly: true,
     secure: config.NODE_ENV === 'production',
+    sameSite: 'Lax',
     maxAge: rememberMe ? 7 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000
   };
   res.cookie('token', token, cookieOptions);

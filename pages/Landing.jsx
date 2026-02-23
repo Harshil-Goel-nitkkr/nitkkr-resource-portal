@@ -1,8 +1,33 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Users, ShieldCheck, BookOpen, GraduationCap } from 'lucide-react';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { verifyAuth } from '../services/api';
 
 export default function Landing() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check if user is already logged in via backend token
+    const checkAuth = async () => {
+      try {
+        const response = await verifyAuth();
+        if (response.data.user) {
+          const user = response.data.user;
+          if (user.role === 'admin') {
+            navigate('/admin/dashboard');
+          } else {
+            navigate('/dashboard');
+          }
+        }
+      } catch (error) {
+        // Token invalid or expired, user stays on landing page
+        console.log('User not authenticated');
+      }
+    };
+    checkAuth();
+  },[]);
   return (
     <div className="flex flex-col items-center justify-center space-y-12 py-10">
       <div className="text-center space-y-4 animate-fade-in-up">

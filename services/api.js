@@ -19,3 +19,7 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+// Auth verification
+export const verifyAuth = () => api.get('/auth/verify-auth');
+export const logout = () => api.post('/auth/logout');

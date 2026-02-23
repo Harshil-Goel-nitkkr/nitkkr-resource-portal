@@ -2,14 +2,23 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { LogOut } from 'lucide-react';
+import { logout as logoutApi } from '../services/api.js';
 
 export const Layout = ({ children }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
-    navigate('/');
+  const handleLogout = async () => {
+    try {
+      // Call backend logout to clear the token cookie
+      await logoutApi();
+    } catch (error) {
+      console.error('Logout API failed:', error);
+    } finally {
+      // Clear local auth state regardless of API success
+      logout();
+      navigate('/');
+    }
   };
 
   return (

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   BookOpen, 
@@ -11,7 +12,7 @@ import {
   Trash2,
   FileText
 } from 'lucide-react';
-import { api } from '../services/api.js';
+import { api, verifyAuth } from '../services/api.js';
 
 // Constants
 const BRANCHES = ['CSE', 'IT', 'ECE', 'EE', 'ME', 'Civil', 'PIE', 'AIML','AIDS','M&C', 'IIOT','VLSI','SET','ROBOTICS'];
@@ -20,7 +21,22 @@ const SENIOR_CATEGORIES = ['2nd Year', '3rd Year', '4th Year', 'Alumni'];
 const RESOURCE_TYPES = ['lecture', 'pdf', 'pyq', 'notes'];
 
 export default function AdminDashboard() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await verifyAuth();
+        if (!response.data.user || response.data.user.role !== 'admin') {
+          navigate('/');
+        }
+      } catch (error) {
+        navigate('/');
+      }
+    };
+    checkAuth();
+  }, [navigate]);
 
   const renderContent = () => {
     switch (activeTab) {

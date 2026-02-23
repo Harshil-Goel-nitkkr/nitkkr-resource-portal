@@ -62,3 +62,16 @@ const generateToken = (user, role, rememberMe) => {
     { expiresIn: rememberMe ? '7d' : '1d' }
   );
 };
+
+export const verifyToken = (token) => {
+  try {
+    const decoded = jwt.verify(token, config.JWT_SECRET);
+    return {
+      id: decoded.id,
+      email: decoded.email,
+      role: decoded.role
+    };
+  } catch (error) {
+    throw new Error('Invalid or expired token');
+  }
+};
