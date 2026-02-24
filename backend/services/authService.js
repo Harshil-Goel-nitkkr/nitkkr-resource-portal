@@ -7,13 +7,13 @@ import * as adminRepository from '../repository/adminRepository.js';
 
 // Mail Transporter
 const transporter = nodemailer.createTransport({
-  service: config.EMAIL.SERVICE,
-  port:465,
-  secure:true,
-  auth: { user: config.EMAIL.USER, pass: config.EMAIL.PASS },
-   tls: {
-    rejectUnauthorized: false,
-  }
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
+  auth: {
+    user: config.EMAIL.USER,
+    pass: config.EMAIL.PASS,
+  },
 });
 
 const generateOTP = () => Math.floor(1000 + Math.random() * 9000).toString();
