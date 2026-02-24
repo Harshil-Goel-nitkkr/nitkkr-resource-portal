@@ -34,10 +34,10 @@ mongoose.connect(config.MONGO_URI)
     // Seed default admin only in development when enabled
     if (config.SEED_DEFAULT_ADMIN && config.NODE_ENV === 'development') {
       try {
-        const adminExists = await Admin.findOne({ email: 'admin@nitkkr.com' });
+        const adminExists = await Admin.findOne({ email: 'admin@nitkkr.ac.in' });
         if (!adminExists) {
           const admin = new Admin({
-            email: 'admin@nitkkr.com',
+            email: 'admin@nitkkr.ac.in',
             password: 'admin123', // Will be hashed by pre-save hook
             name: 'Super Admin'
           });
