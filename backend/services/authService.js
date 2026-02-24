@@ -8,14 +8,15 @@ import * as adminRepository from '../repository/adminRepository.js';
 // Mail Transporter
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
+  port: 587,
+  secure: false,
+  requireTLS: true,
   auth: {
     user: config.EMAIL.USER,
     pass: config.EMAIL.PASS,
   },
-  debug: true,     // ADD
-  logger: true     // ADD
+  debug: true,
+  logger: true
 });
 
 console.log("user: ", config.EMAIL.USER);
