@@ -1,5 +1,11 @@
 import dotenv from 'dotenv';
-dotenv.config();
+import path from "path";
+
+dotenv.config({
+  path: path.resolve(process.cwd(), "../.env"),
+});
+
+console.log(process.env.EMAIL_USER);
 
 export const config = {
   PORT: process.env.PORT || 5000,
