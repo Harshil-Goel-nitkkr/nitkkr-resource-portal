@@ -14,8 +14,12 @@ const transporter = nodemailer.createTransport({
     user: config.EMAIL.USER,
     pass: config.EMAIL.PASS,
   },
+  debug: true,     // ADD
+  logger: true     // ADD
 });
 
+console.log("user: ", config.Email.USER);
+console.log("pass: ", config.Email.PASS);
 const generateOTP = () => Math.floor(1000 + Math.random() * 9000).toString();
 
 export const sendStudentOtp = async (email) => {

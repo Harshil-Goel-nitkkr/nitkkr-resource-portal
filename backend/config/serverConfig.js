@@ -6,6 +6,7 @@ dotenv.config({
 });
 
 console.log(process.env.EMAIL_USER);
+console.log(process.env.EMAIL_PASS);
 
 export const config = {
   PORT: process.env.PORT || 5000,
