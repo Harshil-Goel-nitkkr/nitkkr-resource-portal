@@ -11,5 +11,16 @@ export const config = {
     PASS: process.env.EMAIL_PASS
   },
   CLIENT_URL: process.env.CLIENT_URL || 'http://localhost:3000',
-  NODE_ENV: process.env.NODE_ENV || 'development'
+  NODE_ENV: process.env.NODE_ENV || 'development',
+  SEED_DEFAULT_ADMIN: process.env.SEED_DEFAULT_ADMIN === 'true'
 };
+
+// Validate required environment variables in production
+if (config.NODE_ENV === 'production') {
+  const required = ['MONGO_URI', 'JWT_SECRET', 'EMAIL_USER', 'EMAIL_PASS', 'CLIENT_URL'];
+  const missing = required.filter(key => !process.env[key]);
+  
+  if (missing.length > 0) {
+    throw new Error(`Missing required environment variables in production: ${missing.join(', ')}`);
+  }
+}
