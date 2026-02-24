@@ -10,7 +10,10 @@ const transporter = nodemailer.createTransport({
   service: config.EMAIL.SERVICE,
   port:465,
   secure:true,
-  auth: { user: config.EMAIL.USER, pass: config.EMAIL.PASS }
+  auth: { user: config.EMAIL.USER, pass: config.EMAIL.PASS },
+   tls: {
+    rejectUnauthorized: false,
+  }
 });
 
 const generateOTP = () => Math.floor(1000 + Math.random() * 9000).toString();
