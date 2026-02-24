@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-dotenv.config({ path: path.resolve(process.cwd(), ".env") });
+dotenv.config();
 
 export const config = {
   PORT: process.env.PORT || 5000,
