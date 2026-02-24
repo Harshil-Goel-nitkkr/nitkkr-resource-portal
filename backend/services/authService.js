@@ -8,6 +8,8 @@ import * as adminRepository from '../repository/adminRepository.js';
 // Mail Transporter
 const transporter = nodemailer.createTransport({
   service: config.EMAIL.SERVICE,
+  port:465,
+  secure:true,
   auth: { user: config.EMAIL.USER, pass: config.EMAIL.PASS }
 });
 
