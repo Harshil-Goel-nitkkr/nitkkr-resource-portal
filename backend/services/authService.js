@@ -27,26 +27,28 @@ export const sendStudentOtp = async (email) => {
   // ================= SEND MAIL VIA API =================
   try {
 
-    const response = await axios.post(
-      'https://mailserver.automationlounge.com/api/v1/messages/send',
-      {
-        to: email,
-        subject: 'Your Login OTP',
-        html: `
-          <h3>NIT KKR Resources Login</h3>
-          <p>Your OTP is:</p>
-          <h2>${otp}</h2>
-          <p>This OTP expires in 5 minutes.</p>
-        `
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${config.EMAIL.API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        timeout: 10000
-      }
-    );
+   const messageId = `otp_${Date.now()}_${Math.random().toString(36).slice(2,8)}`;
+
+const response = await axios.post(
+  'https://mailserver.automationlounge.com/api/v1/messages/send',
+  {
+    messageId: messageId,   //REQUIRED FIELD
+    to: email,
+    subject: 'Your Login OTP',
+    html: `
+      <h3>NIT KKR Resources Login</h3>
+      <p>Your OTP is:</p>
+      <h2>${otp}</h2>
+      <p>This OTP expires in 5 minutes.</p>
+    `
+  },
+  {
+    headers: {
+      Authorization: `Bearer ${config.EMAIL.API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+  }
+);
 
     console.log("📧 Mail API response:", response.data);
 
