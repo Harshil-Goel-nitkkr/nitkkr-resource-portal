@@ -7,7 +7,7 @@ import * as adminRepository from '../repository/adminRepository.js';
 
 // MailerSend client
 const mailerSend = new MailerSend({
-  apiKey: process.env.MAILERSEND_API_KEY,
+  apiKey: config.EMAIL.MAILERSEND_API_KEY,
 });
 
 const generateOTP = () => Math.floor(1000 + Math.random() * 9000).toString();

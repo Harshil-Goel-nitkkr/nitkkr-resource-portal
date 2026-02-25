@@ -10,7 +10,7 @@ export const config = {
   EMAIL: {
     USER: process.env.EMAIL_USER,
     PASS: process.env.EMAIL_PASS,
-    API_KEY: process.env.MAILERSEND_API_KEY,
+    MAILERSEND_API_KEY: process.env.MAILERSEND_API_KEY,
     FROM_EMAIL: process.env.MAIL_FROM_EMAIL,
     FROM_NAME: process.env.MAIL_FROM_NAME
   },
