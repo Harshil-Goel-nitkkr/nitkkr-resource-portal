@@ -1,50 +1,45 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import nodemailer from 'nodemailer';
+import { MailerSend, EmailParams, Sender, Recipient } from "mailersend";
 import { config } from '../config/serverConfig.js';
 import * as userRepository from '../repository/userRepository.js';
 import * as adminRepository from '../repository/adminRepository.js';
 
-// Mail Transporter
-let transporter;
-try{
-  transporter = nodemailer.createTransport({
-    host: "smtp.mailersend.net",
-    port: 587,
-    secure: false,
-    auth: { user: config.EMAIL.USER, pass: config.EMAIL.PASS }
-  });
-}
-catch(error){
-  console.error('Error creating mail transporter:', error);
-  throw new Error('Failed to create mail transporter');
-}
+// MailerSend client
+const mailerSend = new MailerSend({
+  apiKey: process.env.MAILERSEND_API_KEY,
+});
 
 const generateOTP = () => Math.floor(1000 + Math.random() * 9000).toString();
 
 export const sendStudentOtp = async (email) => {
   const otp = generateOTP();
   const hashedOtp = await bcrypt.hash(otp, 10);
-  const expiresAt = new Date(Date.now() + 5 * 60000); // 5 mins
+  const expiresAt = new Date(Date.now() + 5 * 60000);
 
   await userRepository.createUserOrUpdateOtp(email, hashedOtp, expiresAt);
 
   if (config.NODE_ENV === 'development') {
     console.log(`DEV MODE OTP for ${email}: ${otp}`);
   } else {
-    try{
-      await transporter.sendMail({
-        from: `"NIT KKR RESOURCES" <${config.EMAIL.USER}>`,
-        to: email,
-        subject: 'Your Login OTP',
-        text: `Your OTP is ${otp}`
-      });
-    }catch(error){
-      console.error('Error sending OTP email:', error);
+    try {
+      const sentFrom = new Sender(config.EMAIL.USER, "NIT KKR RESOURCES");
+      const recipients = [new Recipient(email)];
+
+      const emailParams = new EmailParams()
+        .setFrom(sentFrom)
+        .setTo(recipients)
+        .setSubject("Your Login OTP")
+        .setText(`Your OTP is ${otp}`);
+
+      await mailerSend.email.send(emailParams);
+
+    } catch (error) {
+      console.error('Error sending OTP email:', error?.body || error);
       throw new Error('Failed to send OTP email');
     }
-    
   }
+
   return true;
 };
 
@@ -86,7 +81,7 @@ export const verifyToken = (token) => {
       email: decoded.email,
       role: decoded.role
     };
-  } catch (error) {
+  } catch {
     throw new Error('Invalid or expired token');
   }
 };
