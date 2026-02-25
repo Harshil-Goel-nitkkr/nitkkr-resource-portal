@@ -6,27 +6,17 @@ import * as userRepository from '../repository/userRepository.js';
 import * as adminRepository from '../repository/adminRepository.js';
 
 // Mail Transporter
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false,
-  requireTLS: true,
-  auth: {
-    user: config.EMAIL.USER,
-    pass: config.EMAIL.PASS,
-  },
-  debug: true,
-  logger: true
-});
-
-// Verify transporter connection
-transporter.verify((error, success) => {
-  if (error) {
-    console.error('Mail transporter error:', error);
-  } else {
-    console.log('Mail transporter ready:', success);
-  }
-});
+const createMailTransporter = () => {
+  return nodemailer.createTransport({
+    port: 465,
+    host: "smtp.gmail.com",
+    auth: {
+      user: config.EMAIL.USER,
+      pass: config.EMAIL.PASS,
+    },
+    secure: true,
+  });
+};
 
 console.log("user: ", config.EMAIL.USER);
 console.log("pass: ", config.EMAIL.PASS);
@@ -41,21 +31,48 @@ export const sendStudentOtp = async (email) => {
 
   if (config.NODE_ENV === 'development') {
     console.log(`DEV MODE OTP for ${email}: ${otp}`);
-  } else {
-    try {
-      await transporter.sendMail({
-        from: `"NIT KKR Resources" <${config.EMAIL.USER}>`,
-        to: email,
-        subject: 'Your Login OTP',
-        text: `Your OTP is ${otp}`,
-        html: `<p>Your OTP for NIT KKR Resources is: <strong>${otp}</strong></p><p>This OTP will expire in 5 minutes.</p>`
-      });
-      console.log(`OTP email sent successfully to ${email}`);
-    } catch (error) {
-      console.error(`Failed to send OTP email to ${email}:`, error);
-      throw new Error(`Failed to send OTP: ${error.message}`);
-    }
+    return true;
   }
+
+  const transporter = createMailTransporter();
+
+  // Verify connection configuration
+  await new Promise((resolve, reject) => {
+    transporter.verify(function (error, success) {
+      if (error) {
+        console.log(error);
+        reject(error);
+      } else {
+        console.log("Mail server is ready to take messages");
+        resolve(success);
+      }
+    });
+  });
+
+  const mailData = {
+    from: {
+      name: "NIT KKR Resources",
+      address: config.EMAIL.USER,
+    },
+    to: email,
+    subject: "Your Login OTP",
+    text: `Your OTP is ${otp}`,
+    html: `<p>Your OTP for NIT KKR Resources is: <strong>${otp}</strong></p><p>This OTP will expire in 5 minutes.</p>`,
+  };
+
+  // Send mail
+  await new Promise((resolve, reject) => {
+    transporter.sendMail(mailData, (err, info) => {
+      if (err) {
+        console.error(err);
+        reject(err);
+      } else {
+        console.log(info);
+        resolve(info);
+      }
+    });
+  });
+
   return true;
 };
 
