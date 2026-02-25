@@ -19,6 +19,15 @@ const transporter = nodemailer.createTransport({
   logger: true
 });
 
+// Verify transporter connection
+transporter.verify((error, success) => {
+  if (error) {
+    console.error('Mail transporter error:', error);
+  } else {
+    console.log('Mail transporter ready:', success);
+  }
+});
+
 console.log("user: ", config.EMAIL.USER);
 console.log("pass: ", config.EMAIL.PASS);
 const generateOTP = () => Math.floor(1000 + Math.random() * 9000).toString();
@@ -33,12 +42,19 @@ export const sendStudentOtp = async (email) => {
   if (config.NODE_ENV === 'development') {
     console.log(`DEV MODE OTP for ${email}: ${otp}`);
   } else {
-    await transporter.sendMail({
-      from: `"NIT KKR Resources" <${config.EMAIL.USER}>`,
-      to: email,
-      subject: 'Your Login OTP',
-      text: `Your OTP is ${otp}`
-    });
+    try {
+      await transporter.sendMail({
+        from: `"NIT KKR Resources" <${config.EMAIL.USER}>`,
+        to: email,
+        subject: 'Your Login OTP',
+        text: `Your OTP is ${otp}`,
+        html: `<p>Your OTP for NIT KKR Resources is: <strong>${otp}</strong></p><p>This OTP will expire in 5 minutes.</p>`
+      });
+      console.log(`OTP email sent successfully to ${email}`);
+    } catch (error) {
+      console.error(`Failed to send OTP email to ${email}:`, error);
+      throw new Error(`Failed to send OTP: ${error.message}`);
+    }
   }
   return true;
 };
