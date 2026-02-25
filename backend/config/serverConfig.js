@@ -8,10 +8,11 @@ export const config = {
   MONGO_URI: process.env.MONGO_URI,
   JWT_SECRET: process.env.JWT_SECRET,
   EMAIL: {
-    SERVICE: process.env.EMAIL_SERVICE || 'gmail',
     USER: process.env.EMAIL_USER,
     PASS: process.env.EMAIL_PASS,
-    API_KEY: process.env.EMAIL_API_KEY
+    API_KEY: process.env.MAILERSEND_API_KEY,
+    FROM_EMAIL: process.env.MAIL_FROM_EMAIL,
+    FROM_NAME: process.env.MAIL_FROM_NAME
   },
   CLIENT_URL: process.env.CLIENT_URL || 'http://localhost:3000',
   NODE_ENV: process.env.NODE_ENV || 'development',
