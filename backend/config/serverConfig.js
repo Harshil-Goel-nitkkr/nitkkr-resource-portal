@@ -10,7 +10,8 @@ export const config = {
   EMAIL: {
     SERVICE: process.env.EMAIL_SERVICE || 'gmail',
     USER: process.env.EMAIL_USER,
-    PASS: process.env.EMAIL_PASS
+    PASS: process.env.EMAIL_PASS,
+    API_KEY: process.env.EMAIL_API_KEY
   },
   CLIENT_URL: process.env.CLIENT_URL || 'http://localhost:3000',
   NODE_ENV: process.env.NODE_ENV || 'development',
